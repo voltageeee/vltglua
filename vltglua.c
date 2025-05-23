@@ -4,6 +4,7 @@
 
 int waiting_for_end = 0;
 int line_num = 1;
+int table_declared = 0;
 
 // string_replace replaces FIRST occurancies of "what" with "with" in "str"
 void string_replace(char* str, char* what, char* with) {
@@ -104,10 +105,22 @@ void process_vltglua(char* str) {
 
     if (has_opening_brace && has_a_statement) {
         string_replace(str, "{", "then");
+        waiting_for_end = 1;
     }
 
-    if (has_closing_brace && waiting_for_end) {
+    if (has_opening_brace && waiting_for_end && !has_a_statement) {
+        // possibly - a table was declared.
+        table_declared = 1;
+    }
+
+    if (has_closing_brace && table_declared) {
+        table_declared = 0;
+        return;
+    }
+
+    if (has_closing_brace && waiting_for_end && !table_declared) {
         string_replace(str, "}", "end");
+        waiting_for_end = 0;
     }
 
     string_replace(str, "l_var", "local");
