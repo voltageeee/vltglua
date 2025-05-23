@@ -106,11 +106,14 @@ void process_vltglua(char* str) {
         string_replace(str, "{", "then");
     }
 
+    if (has_closing_brace && waiting_for_end) {
+        string_replace(str, "}", "end");
+    }
+
     string_replace(str, "l_var", "local");
     string_replace(str, "g_var", "");
     string_replace(str, "g_func", "function");
     string_replace(str, "l_func", "local function");
-    string_replace(str, "}", "end");
 }
 
 int main(int argv, char **argc) {
